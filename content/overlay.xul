@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://visited/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://visited/locale/overlay.dtd">
+<overlay id="hello-overlay"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script src="overlay.js"/>
+<!-->
+	<menupopup id="menu_ToolsPopup">
+		<menuitem id="hello-hello" label="&hello;"
+			oncommand="onMenuCommand(event);"/>
+	</menupopup>
+<-->
+</overlay>
