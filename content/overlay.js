@@ -1,3 +1,14 @@
+function createFile(name) {
+	var file = Components.classes["@mozilla.org/file/directory_service;1"].
+		getService(Components.interfaces.nsIProperties).
+		get("ProfD", Components.interfaces.nsIFile);
+	file.append("visitlog");
+	file.append(name);
+	if (file.exitst() == false) {
+		file.create(file.NORMAL_FILE_TYPE, 0755);
+	}
+}
+
 var file = Components.classes["@mozilla.org/file/directory_service;1"].
            getService(Components.interfaces.nsIProperties).
            get("ProfD", Components.interfaces.nsIFile);
@@ -74,18 +85,21 @@ var PageVisit = {
 	Page: {},
 	init: function() {
 		//popup("Browser", gBrowser);
-		//popup("Window", window);
-		if (gBrowser) gBrowser.addEventListener("DOMContentLoaded", PageVisit.onPageLoad, false);
+		popup("initWindow", window);
+		if (gBrowser) 
+			gBrowser.addEventListener("DOMContentLoaded", function(event) {
+				PageVisit.onPageLoad(event);
+			}, false);
 	},
 	onPageLoad: function(ev) {
 		var doc = ev.originalTarget;
 		var win = doc.defaultView;
 		if (win === win.top) {
-			//popup("window", win.document.location);
-			if (PageVisit.Page[win.document.location] === undefined) {
-				PageVisit.Page[win.document.location] = 1;
+			popup("window", win.document.location);
+			if (this.Page[win.document.location] === undefined) {
+				this.Page[win.document.location] = 1;
 			} else {
-				PageVisit.Page[win.document.location] += 1;
+				this.Page[win.document.location] += 1;
 			}
 		}
 		/*
@@ -104,8 +118,30 @@ var PageVisit = {
 	}
 }
 
-var url2host = function(url) {
-	var i = url.indexOf(":");
+function url2host(url) {
+	var i = url.indexOf('#');
+	var rest;
+	if (i == -1) {
+		rest = url;
+	} else {
+		rest = url.slice(0,i);
+	}
+	i = rest.indexOf('://');
+	var schem;
+	if (i == -1) {
+		schem = "http"
+	} else {
+		schem = rest.slice(0,i);
+		rest = rest.slice(i+3);
+	}
+	i = rest.indexOf('/');
+	var host;
+	if (i == -1) {
+		host = rest;
+	} else {
+		host = rest.slice(0, i);
+	}
+	return [schem, host];
 }
 
 var onMenuCommand = function(event) {
